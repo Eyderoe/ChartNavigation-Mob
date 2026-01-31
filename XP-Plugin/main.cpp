@@ -4,16 +4,10 @@
 #include "XPLMProcessing.h"
 #include "XPLMDataAccess.h"
 #include "plane.pb.h"
-#include <google/protobuf/stubs/common.h>
+#include "func.hpp"
 
-#if GOOGLE_PROTOBUF_VERSION >= 6000000 // 不清楚具体版本号
-using ResultString = std::string_view;
-#else
-using ResultString = std::string;
-#endif
 
 constexpr std::string magicHead = {0x40, 0x79, 0x54, 0x20};
-
 
 XPLMDataRef multiId = nullptr; // int[64]: 唯一飞机标识
 XPLMDataRef multiLat = nullptr; // float[64]: 纬度
@@ -30,18 +24,6 @@ std::array<char, 512> flightValues{}, icaoValues{};
 
 XPMPIUBS xp{};
 
-
-ResultString getString (const std::array<char, 512> &data, const int id) {
-    int start{-1}, length{0};
-    for (int i = id * 8; i < id * 8 + 8; ++i) {
-        if (data[i] != 0) {
-            if (start == -1)
-                start = i;
-            length++;
-        }
-    }
-    return {data.data() + start, static_cast<unsigned long>(length)};
-}
 
 float callback (float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon) {
     // 先尝试发送数据
@@ -85,11 +67,11 @@ float callback (float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlight
     }
     // 发送包
     for (const auto &plane : planes) {
-        std::string data{magicHead};
+        std::string data{magicHead + static_cast<char>(0xff & available)};
         plane.AppendToString(&data);
         xp.sendData(std::make_shared<std::string>(std::move(data)));
     }
-    return 0.5;
+    return 1;
 }
 
 PLUGIN_API int XPluginStart (char *outName, char *outSig, char *outDesc) {
@@ -106,7 +88,7 @@ PLUGIN_API int XPluginStart (char *outName, char *outSig, char *outDesc) {
     multiVs = XPLMFindDataRef("sim/cockpit2/tcas/targets/position/vertical_speed");
     // 注册回调
     multiFlightId = XPLMFindDataRef("sim/cockpit2/tcas/targets/flight_id");
-    XPLMRegisterFlightLoopCallback(callback, 0.5, nullptr);
+    XPLMRegisterFlightLoopCallback(callback, 1, nullptr);
     return 1;
 }
 

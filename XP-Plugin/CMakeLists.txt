@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 4.0)
 project(X-Plugin)
 
 set(CMAKE_CXX_STANDARD 20)
-if (APPLE)
+if (APPLE) # mac-intel暂时不可用 后期考虑Github Action
     add_definitions(-DAPL=1 -DIBM=0 -DLIN=0)
-    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64") # Intel和Silicon
+    set(CMAKE_OSX_ARCHITECTURES "arm64") # Intel和Silicon (x86_64;arm64)
     set(SDK_ROOT "/Users/eyderoe/CppLib/SDK")
 elseif (WIN32)
     add_definitions(-DAPL=0 -DIBM=1 -DLIN=0)
@@ -41,6 +41,7 @@ add_definitions(
 set(PROTO_FILES plane.proto)
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 
+# 插件-------------------
 add_library(ChartNaviPlugin SHARED
         "main.cpp"
         "XPlane.cpp"
@@ -56,12 +57,16 @@ elseif (APPLE)
     target_link_libraries(ChartNaviPlugin "-undefined dynamic_lookup")
 endif ()
 target_include_directories(ChartNaviPlugin PRIVATE ${CMAKE_CURRENT_BINARY_DIR})  # protobuf
-
-add_executable(test
-        test.cpp
+# UDP测试-------------------
+add_executable(udpTest
+        test/udpTest.cpp
         XPlane.hpp
         XPlane.cpp)
-target_link_libraries(test ${Boost_LIBRARIES})
+target_link_libraries(udpTest ${Boost_LIBRARIES})
 if (WIN32)
-    target_link_libraries(test ws2_32)
+    target_link_libraries(udpTest ws2_32)
 endif ()
+# 函数测试-------------------
+add_executable(funcTest
+        test/funcTest.cpp
+        func.hpp)
