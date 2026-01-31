@@ -86,8 +86,9 @@ PLUGIN_API int XPluginStart (char *outName, char *outSig, char *outDesc) {
     multiAlt = XPLMFindDataRef("sim/cockpit2/tcas/targets/position/ele");
     multiTrk = XPLMFindDataRef("sim/cockpit2/tcas/targets/position/psi");
     multiVs = XPLMFindDataRef("sim/cockpit2/tcas/targets/position/vertical_speed");
-    // 注册回调
     multiFlightId = XPLMFindDataRef("sim/cockpit2/tcas/targets/flight_id");
+    multiIcao = XPLMFindDataRef("sim/cockpit2/tcas/targets/icao_type");
+    // 注册回调
     XPLMRegisterFlightLoopCallback(callback, 1, nullptr);
     return 1;
 }
