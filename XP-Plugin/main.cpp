@@ -57,7 +57,7 @@ float callback (float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlight
         // 序列化
         std::string data;
         plane.SerializeToString(&data);
-        if (data.size() + nowSize < 1000) { // 没超UDP包 1472
+        if (data.size() + nowSize < 1300) { // 没超UDP包 1472
             nowSize += data.size();
         } else { //超过了
             planes.emplace_back();

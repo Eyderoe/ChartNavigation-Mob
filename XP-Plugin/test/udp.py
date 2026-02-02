@@ -11,6 +11,8 @@ def main():
     MCAST_PORT = 57316
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    if hasattr(socket, 'SO_REUSEPORT'):
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
     sock.bind(('', MCAST_PORT))
     mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
@@ -44,7 +46,7 @@ def main():
 
                 # 输出每架飞机的信息
                 for i, plane in enumerate(planes.planes):
-                    print("飞机 {}".format(i))
+                    print("飞机 {}".format(plane.id))
                     print("位置({:.5f}, {:.5f}) {}ft {}° {}ft/min".format(plane.lat, plane.lon, plane.alt, plane.trk,
                                                                           plane.vs))
                     print("航班:{}, 机型:{}\n".format(plane.flight, plane.icao))
