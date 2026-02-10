@@ -21,6 +21,7 @@ class XPMPIUBS {
         asio::executor_work_guard<asio::io_context::executor_type> workGuard;
 
         asio::awaitable<void> send (std::shared_ptr<std::string> data);
+        ip::address_v4 getIp();
 };
 
 #endif //XPBROADCAST_XPLANE_HPP

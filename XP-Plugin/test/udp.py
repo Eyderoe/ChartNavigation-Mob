@@ -7,7 +7,7 @@ MAGIC_HEAD = b'@yT '
 
 
 def main():
-    MCAST_GRP = '239.1.73.16'
+    MCAST_GRP = '239.255.73.16'
     MCAST_PORT = 57316
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -16,7 +16,7 @@ def main():
     sock.bind(('', MCAST_PORT))
     mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-    print(f"UDP服务器已启动，监听端口 {MCAST_PORT}...")
+    print(f"UDP服务器已启动，监听端口 {MCAST_GRP}:{MCAST_PORT}")
 
     try:
         while True:
@@ -24,6 +24,7 @@ def main():
             data, addr = sock.recvfrom(4096)  # 缓冲区大小4096字节
 
             # 检查数据长度
+            print(data)
             if len(data) < 5:  # 至少需要魔数头(4字节) + 可用飞机数量(1字节)
                 print(f"接收到无效数据包，长度不足: {len(data)}字节")
                 continue

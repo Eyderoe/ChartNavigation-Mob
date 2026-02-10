@@ -6,7 +6,7 @@ int main () {
     int timer{};
     while (true) {
         data[11] = static_cast<char>('0' + timer);
-        xp.sendData(std::make_shared<std::string>(std::move(data)));
+        xp.sendData(std::make_shared<std::string>(data));
         std::this_thread::sleep_for(std::chrono::seconds(1));
         xp.poll();
         if (timer++ > 5)
