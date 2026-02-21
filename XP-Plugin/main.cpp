@@ -24,10 +24,14 @@ std::array<char, 512> flightValues{}, icaoValues{};
 
 XPMPIUBS xp{};
 
+bool needPool{false};
 
 float callback (float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon) {
-    // 先尝试发送数据
-    xp.poll();
+    if (needPool) {
+        needPool = false;
+        xp.poll();
+        return 0.9;
+    }
     // 先确定哪些可用
     XPLMGetDatavi(multiId, idValues.data(), 0, 64);
     const size_t available = std::ranges::count_if(idValues, [](const int id) { return id != 0; });
@@ -71,7 +75,8 @@ float callback (float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlight
         plane.AppendToString(&data);
         xp.sendData(std::make_shared<std::string>(std::move(data)));
     }
-    return 1;
+    needPool = true;
+    return 0.1;
 }
 
 PLUGIN_API int XPluginStart (char *outName, char *outSig, char *outDesc) {

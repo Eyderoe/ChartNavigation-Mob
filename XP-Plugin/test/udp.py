@@ -48,7 +48,7 @@ def main():
                 # 输出每架飞机的信息
                 for i, plane in enumerate(planes.planes):
                     print("飞机 {}".format(plane.id))
-                    print("位置({:.5f}, {:.5f}) {}ft {}° {}ft/min".format(plane.lat, plane.lon, plane.alt, plane.trk,
+                    print("位置({:.5f}, {:.5f}) {}m {}° {}ft/min".format(plane.lat, plane.lon, plane.alt, plane.trk,
                                                                           plane.vs))
                     print("航班:{}, 机型:{}\n".format(plane.flight, plane.icao))
             except Exception as e:
