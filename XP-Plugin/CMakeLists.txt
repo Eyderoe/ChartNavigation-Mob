@@ -61,8 +61,9 @@ target_include_directories(ChartNaviPlugin PRIVATE ${CMAKE_CURRENT_BINARY_DIR}) 
 add_executable(udpTest
         test/udpTest.cpp
         XPlane.hpp
-        XPlane.cpp)
-target_link_libraries(udpTest ${Boost_LIBRARIES})
+        XPlane.cpp
+        ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(udpTest ${Boost_LIBRARIES} ${Protobuf_LIBRARIES})
 if (WIN32)
     target_link_libraries(udpTest ws2_32)
 endif ()
