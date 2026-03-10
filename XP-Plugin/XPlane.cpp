@@ -1,9 +1,14 @@
 #include "XPlane.hpp"
+#include <XPLMUtilities.h>
 
 XPMPIUBS::XPMPIUBS () : workGuard(asio::make_work_guard(io_context)) {
     infoSocket = ip::udp::socket(io_context, ip::udp::v4());
-    infoSocket.set_option(ip::multicast::outbound_interface(getIp()));
-    infoSocket.set_option(ip::multicast::hops(1));
+    const auto realNetwork = getIp();
+    auto info = std::format("Chart Navigation : Send udp via {}, ", realNetwork.to_string());
+    info += realNetwork.to_string().starts_with("192.168") ? "may be a good choice.\n" : "may be a bad choice.\n";
+    XPLMDebugString(info.c_str());
+    infoSocket.set_option(ip::multicast::outbound_interface(realNetwork));
+    infoSocket.set_option(ip::multicast::hops(3));
     infoEndpoint = ip::udp::endpoint(ip::make_address("239.255.73.16"), 57316);
 }
 
